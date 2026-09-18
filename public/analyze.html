@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillBridge AI - Analisis Profil & CV</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- NAVBAR -->
+  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="./index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+          S
+        </div>
+        <span class="font-bold text-lg tracking-tight">SkillBridge <span class="text-indigo-400">AI</span></span>
+      </a>
+      <a href="./dashboard.html" class="text-xs text-slate-400 hover:text-slate-200 transition flex items-center gap-1">
+        Lihat Demo Dashboard <span>→</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="max-w-3xl mx-auto px-6 py-10 w-full">
+    
+    <!-- HEADER TEKS -->
+    <div class="text-center space-y-3 mb-8">
+      <span class="text-xs font-semibold px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full">
+        AI Career Matcher
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+        Mulai Analisis Skill & Karir
+      </h1>
+      <p class="text-sm text-slate-400 max-w-lg mx-auto">
+        Upload CV-mu atau isi data singkat. AI akan mengidentifikasi <i>transferable skill</i> dan memetakan kekurangan skill yang harus kamu kuasai.
+      </p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative backdrop-blur">
+      
+      <form id="careerForm" class="space-y-6">
+        
+        <!-- DROPZONE UPLOAD CV -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            1. Upload CV / Resume (PDF Opsional)
+          </label>
+          
+          <div id="dropzone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 bg-slate-950/50 rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
+            <div class="w-12 h-12 rounded-full bg-slate-800 group-hover:bg-indigo-600/20 text-slate-400 group-hover:text-indigo-400 flex items-center justify-center transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-200">Klik atau seret file CV (PDF)</p>
+              <p class="text-xs text-slate-500 mt-1">Maksimal ukuran file 5MB</p>
+            </div>
+            <input type="file" id="fileInput" name="cv" class="hidden" accept=".pdf">
+          </div>
+
+          <!-- INDIKATOR FILE TERPILIH -->
+          <div id="fileSelected" class="hidden mt-3 p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg flex items-center justify-between">
+            <div class="flex items-center gap-2 overflow-hidden">
+              <span class="text-lg">📄</span>
+              <span id="fileName" class="text-xs text-indigo-300 font-medium truncate">CV_File.pdf</span>
+            </div>
+            <button type="button" id="removeFile" class="text-xs text-rose-400 hover:text-rose-300 px-2 py-1 bg-rose-500/10 rounded transition">
+              Hapus
+            </button>
+          </div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-xs text-slate-500 font-medium uppercase">Profil Tambahan</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <!-- INPUT BACKGROUND & TARGET -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Jurusan Asal -->
+          <div>
+            <label for="jurusanInput" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              2. Jurusan / Background
+            </label>
+            <input type="text" id="jurusanInput" name="jurusan" placeholder="Contoh: Sastra Inggris, Teknik Sipil" 
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition placeholder:text-slate-600">
+          </div>
+
+          <!-- Target Karir -->
+          <div>
+            <label for="targetInput" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              3. Target Karir Impian
+            </label>
+            <input type="text" id="targetInput" name="targetKarir" placeholder="Contoh: Content Strategist, Data Analyst" 
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition placeholder:text-slate-600">
+          </div>
+        </div>
+
+        <!-- OPTION: AI RECOMMENDATION TOGGLE -->
+        <div class="flex items-center gap-2 pt-1">
+          <input type="checkbox" id="aiSuggest" class="w-4 h-4 rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-slate-900">
+          <label for="aiSuggest" class="text-xs text-slate-400 cursor-pointer select-none">
+            Saya bingung target karir saya, biarkan AI merekomendasikan karir terbaik.
+          </label>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" id="submitBtn" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 transition flex items-center justify-center gap-2">
+          <span>Analisis Karir & Skill Gap Saya</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+
+      </form>
+
+    </div>
+
+    <p class="text-center text-xs text-slate-500 mt-6">
+      Data kamu diproses secara aman oleh AI dan hanya digunakan untuk analisis rekomendasi karir.
+    </p>
+
+  </main>
+
+  <!-- OVERLAY LOADING / AI SCANNING ANIMATION -->
+  <div id="loadingModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden p-6">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
+      <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+        <div class="absolute inset-0 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse text-lg">
+          ✨
+        </div>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-slate-100" id="loadingTitle">Menganalisis Data...</h3>
+        <p class="text-xs text-slate-400 mt-1" id="loadingStep">Mengekstrak Transferable Skill...</p>
+      </div>
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div id="progressBar" class="bg-indigo-500 h-1.5 rounded-full w-0 transition-all duration-300"></div>
+      </div>
+      <!-- Error Message Box -->
+      <div id="errorMessage" class="hidden text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-lg"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-600">
+    SkillBridge AI © 2026 - Lomba Web Design & Development
+  </footer>
+
+  <!-- REFACTORED JS LOGIC -->
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileName = document.getElementById('fileName');
+    const removeFileBtn = document.getElementById('removeFile');
+    
+    const careerForm = document.getElementById('careerForm');
+    const jurusanInput = document.getElementById('jurusanInput');
+    const targetInput = document.getElementById('targetInput');
+    const aiSuggestCheckbox = document.getElementById('aiSuggest');
+    
+    const loadingModal = document.getElementById('loadingModal');
+    const progressBar = document.getElementById('progressBar');
+    const loadingStep = document.getElementById('loadingStep');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // 1. DRAG & DROP HANDLERS
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-indigo-500', 'bg-indigo-500/5');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-indigo-500', 'bg-indigo-500/5');
+      });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type === 'application/pdf') {
+        fileInput.files = files;
+        updateFileDisplay(files[0].name);
+      } else {
+        alert('Mohon unggah file format PDF.');
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        updateFileDisplay(e.target.files[0].name);
+      }
+    });
+
+    removeFileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.value = '';
+      fileSelected.classList.add('hidden');
+    });
+
+    function updateFileDisplay(name) {
+      fileName.textContent = name;
+      fileSelected.classList.remove('hidden');
+    }
+
+    // 2. TOGGLE AUTO RECOMMENDATION AI
+    aiSuggestCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        targetInput.value = '';
+        targetInput.placeholder = 'AI akan merekomendasikan posisi terbaik...';
+        targetInput.disabled = true;
+        targetInput.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        targetInput.placeholder = 'Contoh: Content Strategist, Data Analyst';
+        targetInput.disabled = false;
+        targetInput.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    });
+
+    // 3. FORM SUBMISSION & API FETCHING
+    careerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!fileInput.files[0] && !jurusanInput.value.trim()) {
+        alert('Mohon upload CV atau isi jurusan/background kamu.');
+        return;
+      }
+
+      // HAPUS HASIL LAMA DI LOCALSTORAGE
+      localStorage.removeItem('skillbridge_result');
+
+      errorMessage.classList.add('hidden');
+      loadingModal.classList.remove('hidden');
+      updateProgress(15, "Menghubungkan ke Gemini AI...");
+
+      const formData = new FormData();
+      if (fileInput.files[0]) formData.append('cv', fileInput.files[0]);
+      formData.append('jurusan', jurusanInput.value.trim());
+      formData.append('targetKarir', aiSuggestCheckbox.checked ? 'Rekomendasi AI' : targetInput.value.trim());
+
+      try {
+        updateProgress(45, "Menganalisis CV & Transferable Skills...");
+        
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          body: formData
+        });
+
+        updateProgress(75, "Menghitung Skill Gap & Menyusun Roadmap...");
+
+        const result = await response.json();
+
+        if (result.success) {
+          updateProgress(100, "Selesai! Mengarahkan ke Dashboard...");
+          // SIMPAN DATA AI RELEVANT KE LOCALSTORAGE
+          localStorage.setItem('skillbridge_result', JSON.stringify(result.data));
+          
+          setTimeout(() => {
+            window.location.href = './dashboard.html';
+          }, 600);
+        } else {
+          throw new Error(result.message || 'Gagal memproses analisis.');
+        }
+
+      } catch (err) {
+        console.error(err);
+        errorMessage.textContent = err.message || "Terjadi kesalahan server. Coba lagi.";
+        errorMessage.classList.remove('hidden');
+        setTimeout(() => {
+          loadingModal.classList.add('hidden');
+        }, 2500);
+      }
+    });
+
+    function updateProgress(percent, text) {
+      progressBar.style.width = percent + '%';
+      loadingStep.textContent = text;
+    }
+  </script>
+
+</body>
+</html>

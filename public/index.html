@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkillBridge AI - Analisis Karir & Skill Gap</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- NAVBAR -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+          S
+        </div>
+        <span class="font-bold text-lg tracking-tight">SkillBridge <span class="text-indigo-400">AI</span></span>
+      </div>
+      <a href="./dashboard.html" class="text-xs text-slate-400 hover:text-slate-200 transition">Lihat Demo Dashboard →</a>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-3xl mx-auto px-6 py-12 w-full">
+    
+    <!-- HEADER TEKS -->
+    <div class="text-center space-y-3 mb-8">
+      <span class="text-xs font-semibold px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full">
+        AI Career Matcher
+      </span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">
+        Jembatani Jurusanmu ke Karir Impian
+      </h1>
+      <p class="text-sm text-slate-400 max-w-lg mx-auto">
+        Upload CV atau isi profil singkatmu. AI kami akan mengidentifikasi <i>transferable skill</i> dan menyusun <i>roadmap</i> belajar terstruktur.
+      </p>
+    </div>
+
+    <!-- FORM CARD CONTAINER -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl relative">
+      
+      <form id="careerForm" class="space-y-6">
+        
+        <!-- DROPZONE UPLOAD CV -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+            1. Upload CV / Resume (Rekomendasi)
+          </label>
+          <div id="dropzone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 bg-slate-950/50 rounded-xl p-6 text-center cursor-pointer transition flex flex-col items-center justify-center gap-2 group">
+            <div class="w-12 h-12 rounded-full bg-slate-800 group-hover:bg-indigo-600/20 text-slate-400 group-hover:text-indigo-400 flex items-center justify-center transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-200">Klik untuk upload atau seret file CV (PDF)</p>
+              <p class="text-xs text-slate-500 mt-1">Maksimal file 5MB</p>
+            </div>
+            <input type="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx">
+          </div>
+          <!-- Indikator file terpilih -->
+          <div id="fileSelected" class="hidden mt-2 p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg flex items-center justify-between">
+            <span id="fileName" class="text-xs text-indigo-300 font-medium">CV_Rian_2026.pdf</span>
+            <span class="text-xs text-emerald-400 font-semibold">Ready</span>
+          </div>
+        </div>
+
+        <div class="relative flex py-2 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-4 text-xs text-slate-500 font-medium uppercase">atau isi manual</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <!-- INPUT BACKGROUND & TARGET -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Jurusan Asal -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              2. Jurusan / Background
+            </label>
+            <input type="text" placeholder="Contoh: Sastra Inggris, Teknik Sipil, SMA" 
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+          </div>
+
+          <!-- Target Karir -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+              3. Target Karir Impian
+            </label>
+            <input type="text" placeholder="Contoh: Content Strategist, Data Analyst" 
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
+          </div>
+        </div>
+
+        <!-- OPTION: TANYA AI JIKA BINGUNG -->
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="aiSuggest" class="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500">
+          <label for="aiSuggest" class="text-xs text-slate-400">
+            Saya bingung target karir saya, minta AI rekomendasikan berdasarkan CV/Skill.
+          </label>
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 transition flex items-center justify-center gap-2">
+          <span>Analisis Karir & Skill Gap Saya</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
+
+      </form>
+
+    </div>
+
+    <p class="text-center text-xs text-slate-500 mt-6">
+      Data CV kamu aman dan hanya digunakan untuk analisis rekomendasi otomatis oleh SkillBridge AI.
+    </p>
+
+  </main>
+
+  <!-- OVERLAY LOADING / AI SCANNING ANIMATION (POPUP) -->
+  <div id="loadingModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex flex-col items-center justify-center hidden">
+    <div class="bg-slate-900 border border-slate-800 p-8 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl">
+      <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+        <!-- Spinner outer -->
+        <div class="absolute inset-0 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+        <!-- Pulse inner icon -->
+        <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse">
+          ✨
+        </div>
+      </div>
+      <div>
+        <h3 class="text-base font-bold text-slate-100">Menganalisis Dokumen...</h3>
+        <p class="text-xs text-slate-400 mt-1" id="loadingStep">Mendeteksi Transferable Skill dari CV...</p>
+      </div>
+      <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+        <div id="progressBar" class="bg-indigo-500 h-1.5 rounded-full w-0 transition-all duration-300"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-900 py-6 text-center text-xs text-slate-600">
+    SkillBridge AI © 2026 - Lomba Web Design & Development
+  </footer>
+
+  <!-- SIMPLE INTERACTION SCRIPT -->
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileSelected = document.getElementById('fileSelected');
+    const fileName = document.getElementById('fileName');
+    const careerForm = document.getElementById('careerForm');
+    const loadingModal = document.getElementById('loadingModal');
+    const progressBar = document.getElementById('progressBar');
+    const loadingStep = document.getElementById('loadingStep');
+
+    // Trigger file input click
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    // Handle File selection display
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        fileName.textContent = e.target.files[0].name;
+        fileSelected.classList.remove('hidden');
+      }
+    });
+
+    // Handle Form Submit & Trigger AI Scanning Animation
+    careerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Tampilkan popup loading
+      loadingModal.classList.remove('hidden');
+
+      // Simulasi Progress Bar
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 25;
+        progressBar.style.width = progress + '%';
+
+        if (progress === 25) loadingStep.textContent = "Mencari Transferable Skills...";
+        if (progress === 50) loadingStep.textContent = "Menghitung Skill Gap Target Karir...";
+        if (progress === 75) loadingStep.textContent = "Menyusun Interactive Roadmap...";
+
+        if (progress >= 100) {
+          clearInterval(interval);
+          // Redireksi ke dashboard setelah loading selesai
+          window.location.href = './dashboard.html';
+        }
+      }, 400); // Total durasi loading ±1.6 detik
+    });
+  </script>
+</body>
+</html>
