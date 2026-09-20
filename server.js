@@ -40,18 +40,43 @@ const genAI = (apiKey && apiKey !== 'YOUR_API_KEY_HERE') ? new GoogleGenerativeA
 // =========================================================================
 function extractSkillsFromText(text = '') {
   if (!text || text.length < 20) return [];
-  
-  const words = text
-    .replace(/[^a-zA-Z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter(word => word.length > 3)
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
 
-  // Ambil kata unik, hindari kata umum (stop words)
-  const stopWords = new Set(['Dan', 'Atau', 'Dengan', 'Untuk', 'Yang', 'Pada', 'Dari', 'Serta', 'Saya', 'Dengan', 'Dari']);
-  const filtered = words.filter(w => !stopWords.has(w));
-  
-  return [...new Set(filtered)].slice(0, 5);
+  const skillDictionary = [
+    ['javascript', 'JavaScript'], ['typescript', 'TypeScript'], ['python', 'Python'],
+    ['java', 'Java'], ['html', 'HTML'], ['css', 'CSS'], ['sql', 'SQL'],
+    ['react', 'React'], ['node.js', 'Node.js'], ['php', 'PHP'], ['figma', 'Figma'],
+    ['excel', 'Microsoft Excel'], ['power bi', 'Power BI'], ['tableau', 'Tableau'],
+    ['google analytics', 'Google Analytics'], ['seo', 'SEO'], ['copywriting', 'Copywriting'],
+    ['content writing', 'Content Writing'], ['social media', 'Social Media'],
+    ['digital marketing', 'Digital Marketing'], ['public speaking', 'Public Speaking'],
+    ['data analysis', 'Data Analysis'], ['machine learning', 'Machine Learning'],
+    ['project management', 'Project Management'], ['communication', 'Komunikasi'],
+    ['leadership', 'Leadership'], ['research', 'Research'], ['riset', 'Riset'],
+    ['design', 'Design'], ['editing', 'Editing']
+  ];
+  const normalizedText = text.toLowerCase();
+
+  return skillDictionary
+    .filter(([keyword]) => new RegExp(`(^|[^a-z0-9])${keyword.replace(/[.+]/g, '\\$&')}([^a-z0-9]|$)`, 'i').test(normalizedText))
+    .map(([, label]) => label)
+    .slice(0, 5);
+}
+
+function calculateMatchScore(pdfText = '', targetKarir = '', category = null) {
+  const normalizedText = pdfText.toLowerCase();
+  const targetTerms = targetKarir.toLowerCase().match(/[a-z0-9]+/g) || [];
+  const categoryTerms = category ? category.keywords : [];
+  const relevantTerms = [...new Set([...targetTerms, ...categoryTerms])]
+    .filter(term => term.length > 3);
+  const matchingTerms = relevantTerms.filter(term => normalizedText.includes(term));
+  const extractedSkillCount = extractSkillsFromText(pdfText).length;
+
+  if (!pdfText.trim()) return 45;
+
+  return Math.min(
+    95,
+    40 + (matchingTerms.length * 8) + (extractedSkillCount * 2)
+  );
 }
 
 // =========================================================================
@@ -123,7 +148,7 @@ function generateSmartMockData(jurusan = '', targetKarir = '', pdfText = '') {
     return {
       jurusan: jurusanClean,
       targetKarir: targetClean,
-      matchScore: matched.matchScore,
+      matchScore: calculateMatchScore(pdfText, targetClean, matched),
       summary: pdfText.length > 50 
         ? `Berdasarkan isi CV, kamu memiliki modal kompetensi pada (${finalSkills.slice(0, 3).join(', ')}) yang siap ditransformasikan ke peran ${targetClean}.`
         : `Latar belakang ${jurusanClean} memberikan fondasi yang baik untuk bertransisi menjadi ${targetClean}.`,
@@ -138,7 +163,7 @@ function generateSmartMockData(jurusan = '', targetKarir = '', pdfText = '') {
   return {
     jurusan: jurusanClean,
     targetKarir: targetClean,
-    matchScore: Math.floor(Math.random() * (88 - 68 + 1)) + 68,
+    matchScore: calculateMatchScore(pdfText, targetClean),
     summary: pdfText.length > 50
       ? `CV kamu menunjukkan penguasaan (${finalSkills.slice(0, 3).join(', ')}) yang relevan untuk mendukung karir sebagai ${targetClean}.`
       : `Pola pikir & keterampilan dari ${jurusanClean} dapat dialihkan secara strategis ke posisi ${targetClean}.`,

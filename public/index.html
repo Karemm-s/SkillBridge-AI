@@ -57,7 +57,7 @@
               <p class="text-sm font-medium text-slate-200">Klik untuk upload atau seret file CV (PDF)</p>
               <p class="text-xs text-slate-500 mt-1">Maksimal file 5MB</p>
             </div>
-            <input type="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx">
+            <input type="file" id="fileInput" name="cv" class="hidden" accept=".pdf">
           </div>
           <!-- Indikator file terpilih -->
           <div id="fileSelected" class="hidden mt-2 p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg flex items-center justify-between">
@@ -79,7 +79,7 @@
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
               2. Jurusan / Background
             </label>
-            <input type="text" placeholder="Contoh: Sastra Inggris, Teknik Sipil, SMA" 
+            <input type="text" id="jurusanInput" name="jurusan" placeholder="Contoh: Sastra Inggris, Teknik Sipil, SMA" 
               class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           </div>
 
@@ -88,7 +88,7 @@
             <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
               3. Target Karir Impian
             </label>
-            <input type="text" placeholder="Contoh: Content Strategist, Data Analyst" 
+            <input type="text" id="targetInput" name="targetKarir" placeholder="Contoh: Content Strategist, Data Analyst" 
               class="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition">
           </div>
         </div>
@@ -167,29 +167,48 @@
       }
     });
 
-    // Handle Form Submit & Trigger AI Scanning Animation
-    careerForm.addEventListener('submit', (e) => {
+    const jurusanInput = document.getElementById('jurusanInput');
+    const targetInput = document.getElementById('targetInput');
+    const aiSuggestCheckbox = document.getElementById('aiSuggest');
+
+    aiSuggestCheckbox.addEventListener('change', (e) => {
+      targetInput.disabled = e.target.checked;
+      if (e.target.checked) targetInput.value = '';
+    });
+
+    // Handle Form Submit & Send the actual user data to the analysis API
+    careerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      // Tampilkan popup loading
+
+      if (!fileInput.files[0] && !jurusanInput.value.trim()) {
+        alert('Mohon upload CV atau isi jurusan/background kamu.');
+        return;
+      }
+
       loadingModal.classList.remove('hidden');
+      progressBar.style.width = '25%';
+      loadingStep.textContent = "Mengirim CV untuk dianalisis...";
 
-      // Simulasi Progress Bar
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 25;
-        progressBar.style.width = progress + '%';
+      const formData = new FormData();
+      if (fileInput.files[0]) formData.append('cv', fileInput.files[0]);
+      formData.append('jurusan', jurusanInput.value.trim());
+      formData.append('targetKarir', aiSuggestCheckbox.checked ? 'Rekomendasi AI' : targetInput.value.trim());
 
-        if (progress === 25) loadingStep.textContent = "Mencari Transferable Skills...";
-        if (progress === 50) loadingStep.textContent = "Menghitung Skill Gap Target Karir...";
-        if (progress === 75) loadingStep.textContent = "Menyusun Interactive Roadmap...";
+      try {
+        const response = await fetch('/api/analyze', { method: 'POST', body: formData });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.message || 'Analisis gagal.');
 
-        if (progress >= 100) {
-          clearInterval(interval);
-          // Redireksi ke dashboard setelah loading selesai
+        progressBar.style.width = '100%';
+        loadingStep.textContent = "Selesai! Mengarahkan ke dashboard...";
+        localStorage.setItem('skillbridge_result', JSON.stringify(result.data));
+        setTimeout(() => {
           window.location.href = './dashboard.html';
-        }
-      }, 400); // Total durasi loading ±1.6 detik
+        }, 400);
+      } catch (error) {
+        loadingModal.classList.add('hidden');
+        alert(error.message || 'Terjadi kesalahan server. Coba lagi.');
+      }
     });
   </script>
 </body>

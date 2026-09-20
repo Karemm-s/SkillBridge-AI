@@ -210,8 +210,9 @@
 
       // 3. RENDER HEADER & SCORE
       document.getElementById('careerPathTitle').innerHTML = `${data.jurusan || 'Background'} <span class="text-slate-500 font-normal">→</span> ${data.targetKarir || 'Target Karir'}`;
-      document.getElementById('matchScoreText').textContent = `${data.matchScore || 70}%`;
-      document.getElementById('matchScoreBar').style.width = `${data.matchScore || 70}%`;
+      const matchScore = Number.isFinite(Number(data.matchScore)) ? Number(data.matchScore) : 70;
+      document.getElementById('matchScoreText').textContent = `${matchScore}%`;
+      document.getElementById('matchScoreBar').style.width = `${matchScore}%`;
       
       if (data.summary) {
         document.getElementById('summaryText').textContent = data.summary;
